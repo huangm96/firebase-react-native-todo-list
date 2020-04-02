@@ -1,4 +1,6 @@
 import React from 'react';
+import { Root } from "native-base";
+
 import { StyleSheet, Text, View } from 'react-native';
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
@@ -8,7 +10,6 @@ import { firebaseConfig } from './FirebaseConfig';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import TodoListPage from './components/TodoListPage';
-
 
 firebase.initializeApp(firebaseConfig)
 
@@ -37,9 +38,11 @@ function MyStack() {
 }
 export default function App() {
   return (
+    <Root>
     <NavigationContainer>
       <MyStack />
-    </NavigationContainer>
+      </NavigationContainer>
+      </Root>
   );
 }
 

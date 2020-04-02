@@ -1,5 +1,8 @@
+import { FIREBASE_AIP_KEY } from "react-native-dotenv";
+
+
 export const firebaseConfig = {
-         apiKey: "AIzaSyBRzdgDKf0eLSMvr_euoVZSTL_rFY0Rkso",
+         apiKey: FIREBASE_AIP_KEY,
          authDomain: "fir-react-native-todo.firebaseapp.com",
          databaseURL: "https://fir-react-native-todo.firebaseio.com",
          projectId: "fir-react-native-todo",
