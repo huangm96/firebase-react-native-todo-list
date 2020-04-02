@@ -10,6 +10,7 @@ import { firebaseConfig } from './FirebaseConfig';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import TodoListPage from './components/TodoListPage';
+import LoadingHomePage from './components/LoadingHomePage';
 
 firebase.initializeApp(firebaseConfig)
 
@@ -18,6 +19,11 @@ const Stack = createStackNavigator();
 function MyStack() {
   return (
     <Stack.Navigator>
+      <Stack.Screen
+        name="LoadingHome"
+        component={LoadingHomePage}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         name="Login"
         component={Login}

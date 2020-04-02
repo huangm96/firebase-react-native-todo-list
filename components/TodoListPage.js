@@ -1,10 +1,17 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import * as firebase from "firebase";
+
+import { StyleSheet, Text, View,Button } from "react-native";
 
 function TodoListPage() {
   return (
     <View>
       <Text>TodoListPage</Text>
+      <View>
+              <Button title="Sign out" onPress={() => {
+                  firebase.auth().signOut()
+              }}/>
+      </View>
     </View>
   );
 }

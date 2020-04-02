@@ -59,8 +59,24 @@ function Login({ navigation }) {
             // Sign in with credential from the Google user.
             firebase
               .auth()
-                .signInWithCredential(credential).then((res) => {
-                  console.log("user sign in ", res)
+                .signInAndRetrieveDataWithCredential(credential).then((res) => {
+                    console.log("user sign in ", res)
+                    if (res.additionalUserInfo.isNewUser) {
+                         firebase.database().ref("/users/" + res.user.uid).set({
+                        email: res.user.email,
+                        profile_pic: res.additionalUserInfo.profile.picture,
+                        first_name: res.additionalUserInfo.profile.given_name,
+                        last_name:res.additionalUserInfo.profile.family_name,
+                            created_at:Date.now()
+                    })
+                    } else {
+                        firebase.database().ref("/users/" + res.user.uid).update({
+                            last_logged_in:Date.now()
+                        })
+                    }
+                   
+                }).then((snapshot) => {
+                  console.log("snapshot",snapshot)
               })
               .catch(function(error) {
                 // Handle Errors here.
@@ -162,7 +178,7 @@ function Login({ navigation }) {
             dark
             onPress={signInWithGoogleAsync}
           >
-            <Text style={{ color: "white" }}>Login with Google</Text>
+            <Text style={{ color: "white" }}>Sign in with Google</Text>
           </Button>
         )}
       </Form>
