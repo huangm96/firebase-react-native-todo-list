@@ -5172,6 +5172,11 @@ react-native-screens@^2.4.0:
   dependencies:
     debounce "^1.2.0"
 
+react-native-swipeable-flat-list@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/react-native-swipeable-flat-list/-/react-native-swipeable-flat-list-0.1.2.tgz#11c419c3919bdff581479186b959ef47bad0d959"
+  integrity sha512-AmxHZgRNhz73ITlulMv84Z27DmNgZKaYQQrlTs8Zi4O8/GKtXL1SPkJ/I6LA62MDwOPQDmWdZ/I87F2XIrTM2g==
+
 react-native-vector-icons@^6.6.0:
   version "6.6.0"
   resolved "https://registry.yarnpkg.com/react-native-vector-icons/-/react-native-vector-icons-6.6.0.tgz#66cf004918eb05d90778d64bd42077c1800d481b"
