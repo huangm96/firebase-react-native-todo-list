@@ -33,7 +33,7 @@ function TodoListPage() {
     const [dataList, setDataList] = useState([])
     useEffect(() => {
         firebase.database().ref("/contacts").on('child_added', (data) => {
-            dataList.push(data)
+            dataList.push(data);
         })
     },[])
     const addRow = () => {
@@ -42,7 +42,9 @@ function TodoListPage() {
             firebase.database().ref('/contacts').child(key).set({name:newName})
         }
     }
-    const deleteRow = () => { };
+    const deleteRow = () => {
+        // deleteRow
+     };
     const showInfo = () => {};
   return (
     <Container style={styles.container}>
