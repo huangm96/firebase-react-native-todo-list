@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import * as firebase from "firebase";
 import { SwipeableFlatList } from "react-native-swipeable-flat-list";
 
-import { StyleSheet, Text, View, StatusBar } from "react-native";
+import { StyleSheet, Text, View, StatusBar, Dimensions } from "react-native";
 import {
   Container,
   Content,
@@ -13,7 +13,7 @@ import {
   Button,
   Icon,
   Title,
-  Toast
+  Toast,Fab
 } from "native-base";
 import Dialog, { DialogContent } from "react-native-popup-dialog";
 const showToast = (type, message) => {
@@ -25,10 +25,14 @@ const showToast = (type, message) => {
   });
 };
 function TodoListPage() {
+      const [Fabvisible, setFabVisible] = useState(false);
+
   const [visible, setVisible] = useState(false);
   const [newName, setNewName] = useState("");
   const [dataList, setDataList] = useState([]);
-  const [updatedName, setUpdatedName] = useState({});
+    const [updatedName, setUpdatedName] = useState({});
+      const { width, height } = Dimensions.get("window");
+
 
   useEffect(() => {
     firebase
@@ -144,13 +148,13 @@ function TodoListPage() {
           )}
           backgroundColor={"white"}
         />
-        <View style={{ flex: 1 }}>
+        <View style={styles.dialogContainer}>
           <Dialog
             visible={visible}
             onTouchOutside={() => {
               setVisible(false);
             }}
-            style={{ flex: 3 }}
+            style={{ width: width - 20, height: height * 0.3 }}
           >
             <DialogContent>
               <Icon name="information-circle" />
@@ -172,15 +176,25 @@ function TodoListPage() {
           </Dialog>
         </View>
       </Content>
-      {/* <Button
+      <Fab
+        active={Fabvisible}
+        direction="up"
+        containerStyle={{}}
+        style={{ backgroundColor: "red" }}
+        position="bottomRight"
+        onPress={() => setFabVisible(!Fabvisible)}
+      >
+        <Icon name="share" style={{ backgroundColor: "red" }} />
+        <Button
           title="Sign out"
           onPress={() => {
             firebase.auth().signOut();
           }}
+          style={{ backgroundColor: "red" }}
         >
-          <Text>Sign out</Text>
+          <Icon name="exit" style={{}} />
         </Button>
-         */}
+      </Fab>
     </Container>
   );
 }
