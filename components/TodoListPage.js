@@ -2,50 +2,79 @@ import React, { useState, useEffect } from "react";
 import * as firebase from "firebase";
 import { SwipeableFlatList } from "react-native-swipeable-flat-list";
 
-import {
-  StyleSheet,
-  Text,
-  View,
-  StatusBar,
-  
-  
-} from "react-native";
+import { StyleSheet, Text, View, StatusBar } from "react-native";
 import {
   Container,
   Content,
   Header,
   Body,
-  Form,
   Input,
   Item,
-  Label,
   Button,
   Icon,
-  List,
-  ListItem,
-  Title
+  Title,
+  Toast
 } from "native-base";
-
+const showToast = (type, message) => {
+  Toast.show({
+    text: `${message}`,
+    type: type,
+    position: "top",
+    duration: 3000
+  });
+};
 function TodoListPage() {
-    
-
-    const [newName, setNewName] = useState('')
-    const [dataList, setDataList] = useState([])
-    useEffect(() => {
-        firebase.database().ref("/contacts").on('child_added', (data) => {
-            dataList.push(data);
-        })
-    },[])
-    const addRow = () => {
-        if (newName) {
-            var key = firebase.database().ref('/contacts').push().key
-            firebase.database().ref('/contacts').child(key).set({name:newName})
-        }
+  
+  const [newName, setNewName] = useState("");
+  const [dataList, setDataList] = useState([]);
+  useEffect(() => {
+    firebase
+      .database()
+      .ref("/contacts")
+        .on("value", data => {
+            var storage = [];
+            for (var i = 0; i < Object.keys(data.val()).length; i++) {
+              storage.push({
+                key: Object.keys(data.val())[i],
+                data: Object.values(data.val())[i]
+              });
+            }
+          
+        setDataList(storage);
+      });
+  }, []);
+    console.log(dataList)
+  const addRow = () => {
+    if (newName) {
+      var key = firebase
+        .database()
+        .ref("/contacts")
+        .push().key;
+      firebase
+        .database()
+        .ref("/contacts")
+        .child(key)
+        .set({ name: newName })
+          .then(res => {
+            setNewName("");
+            showToast("success", "Added");
+            
+        });
     }
-    const deleteRow = () => {
-        // deleteRow
-     };
-    const showInfo = () => {};
+  };
+  const deleteRow = (item) => {
+    // deleteRow
+      firebase
+        .database()
+        .ref("/contacts")
+        .child(item.key)
+          .remove()
+          .then(res => {
+
+          showToast("danger", "Removed");
+        });;
+  };
+  const showInfo = () => {};
   return (
     <Container style={styles.container}>
       <Header style={{ marginTop: StatusBar.currentHeight }}>
@@ -57,21 +86,22 @@ function TodoListPage() {
         <Item>
           <Input
             placeholder="Add name"
+            defaultValue={newName}
             onChangeText={text => setNewName(text)}
           />
           <Button onPress={addRow}>
             <Icon name="add" />
           </Button>
         </Item>
-    
+
         <SwipeableFlatList
           keyExtractor={(item, index) => {
             return "item-" + index;
-                  }}
-                  enableEmptySections
+          }}
+          enableEmptySections
           data={dataList}
-          renderItem={({ item }) => (
-            <Text style={{ height: 48 }}>{item.name}</Text>
+                  renderItem={({ item }) => (
+            <Text style={{ height: 48 }}>{item.data.name}</Text>
           )}
           renderLeft={({ item }) => (
             <Button full style={{ width: 75 }} onPress={showInfo}>
@@ -79,40 +109,13 @@ function TodoListPage() {
             </Button>
           )}
           renderRight={({ item }) => (
-            <Button full danger style={{ width: 75 }} onPress={deleteRow}>
+            <Button full danger style={{ width: 75 }} onPress={()=>deleteRow(item)}>
               <Icon name="trash" />
             </Button>
           )}
           backgroundColor={"white"}
         />
-        {/* <FlatList
-          keyExtractor={(item, index) => {
-            return "item-" + index;
-          }}
-          data={data}
-          renderItem={({ item }) => (
-            <SwipeRow
-              leftOpenValue={75}
-              rightOpenValue={-75}
-              left={
-                <Button full>
-                  <Icon name="information-circle" />
-                </Button>
-              }
-              body={
-                <View>
-                  <Text style={{ paddingLeft: 15 }}>{item}</Text>
-                </View>
-              }
-              right={
-                <Button full danger>
-                  <Icon name="trash" />
-                </Button>
-              }
-            />
-          )}
-         
-        /> */}
+        
       </Content>
       {/* <Button
           title="Sign out"
@@ -132,6 +135,6 @@ export default TodoListPage;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#fff"
   }
 });
