@@ -75,24 +75,23 @@ function TodoListPage() {
         showToast("danger", "Removed");
       });
   };
-    const openDialog = item => {
-    
+  const openDialog = item => {
     setVisible(true);
-        setUpdatedName({ key:item.key, name:item.data.name });
-    };
-    console.log(updatedName)
-    const updateInfo = () => {
-      console.log(updatedName.key)
+    setUpdatedName({ key: item.key, name: item.data.name });
+  };
+  console.log(updatedName);
+  const updateInfo = () => {
+    console.log(updatedName.key);
     firebase
       .database()
-      .ref("/contacts/"+updatedName.key)
-      
+      .ref("/contacts/" + updatedName.key)
+
       .update({
         name: updatedName.name
       })
       .then(() => {
-          showToast("success", "Updateded");
-          setVisible(false)
+        showToast("success", "Updateded");
+        setVisible(false);
       });
   };
   return (
@@ -157,7 +156,9 @@ function TodoListPage() {
               <Icon name="information-circle" />
               <Input
                 defaultValue={updatedName.name}
-                              onChangeText={text => setUpdatedName({ ...updatedName,name:text })}
+                onChangeText={text =>
+                  setUpdatedName({ ...updatedName, name: text })
+                }
               />
               <Button
                 full
