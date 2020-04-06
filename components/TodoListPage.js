@@ -15,6 +15,7 @@ import {
   Title,
   Toast
 } from "native-base";
+import Dialog, { DialogContent } from "react-native-popup-dialog";
 const showToast = (type, message) => {
   Toast.show({
     text: `${message}`,
@@ -24,26 +25,28 @@ const showToast = (type, message) => {
   });
 };
 function TodoListPage() {
-  
+  const [visible, setVisible] = useState(false);
   const [newName, setNewName] = useState("");
   const [dataList, setDataList] = useState([]);
+  const [updatedName, setUpdatedName] = useState({});
+
   useEffect(() => {
     firebase
       .database()
       .ref("/contacts")
-        .on("value", data => {
-            var storage = [];
-            for (var i = 0; i < Object.keys(data.val()).length; i++) {
-              storage.push({
-                key: Object.keys(data.val())[i],
-                data: Object.values(data.val())[i]
-              });
-            }
-          
+      .on("value", data => {
+        var storage = [];
+        for (var i = 0; i < Object.keys(data.val()).length; i++) {
+          storage.push({
+            key: Object.keys(data.val())[i],
+            data: Object.values(data.val())[i]
+          });
+        }
+
         setDataList(storage);
       });
   }, []);
-    console.log(dataList)
+  console.log(dataList);
   const addRow = () => {
     if (newName) {
       var key = firebase
@@ -55,26 +58,43 @@ function TodoListPage() {
         .ref("/contacts")
         .child(key)
         .set({ name: newName })
-          .then(res => {
-            setNewName("");
-            showToast("success", "Added");
-            
+        .then(res => {
+          setNewName("");
+          showToast("success", "Added");
         });
     }
   };
-  const deleteRow = (item) => {
+  const deleteRow = item => {
     // deleteRow
-      firebase
-        .database()
-        .ref("/contacts")
-        .child(item.key)
-          .remove()
-          .then(res => {
-
-          showToast("danger", "Removed");
-        });;
+    firebase
+      .database()
+      .ref("/contacts")
+      .child(item.key)
+      .remove()
+      .then(res => {
+        showToast("danger", "Removed");
+      });
   };
-  const showInfo = () => {};
+    const openDialog = item => {
+    
+    setVisible(true);
+        setUpdatedName({ key:item.key, name:item.data.name });
+    };
+    console.log(updatedName)
+    const updateInfo = () => {
+      console.log(updatedName.key)
+    firebase
+      .database()
+      .ref("/contacts/"+updatedName.key)
+      
+      .update({
+        name: updatedName.name
+      })
+      .then(() => {
+          showToast("success", "Updateded");
+          setVisible(false)
+      });
+  };
   return (
     <Container style={styles.container}>
       <Header style={{ marginTop: StatusBar.currentHeight }}>
@@ -100,22 +120,56 @@ function TodoListPage() {
           }}
           enableEmptySections
           data={dataList}
-                  renderItem={({ item }) => (
+          renderItem={({ item }) => (
             <Text style={{ height: 48 }}>{item.data.name}</Text>
           )}
           renderLeft={({ item }) => (
-            <Button full style={{ width: 75 }} onPress={showInfo}>
+            <Button
+              full
+              style={{ width: 75 }}
+              onPress={() => openDialog(item)}
+              title="Show Dialog"
+            >
               <Icon name="information-circle" />
             </Button>
           )}
           renderRight={({ item }) => (
-            <Button full danger style={{ width: 75 }} onPress={()=>deleteRow(item)}>
+            <Button
+              full
+              danger
+              style={{ width: 75 }}
+              onPress={() => deleteRow(item)}
+            >
               <Icon name="trash" />
             </Button>
           )}
           backgroundColor={"white"}
         />
-        
+        <View style={{ flex: 1 }}>
+          <Dialog
+            visible={visible}
+            onTouchOutside={() => {
+              setVisible(false);
+            }}
+            style={{ flex: 3 }}
+          >
+            <DialogContent>
+              <Icon name="information-circle" />
+              <Input
+                defaultValue={updatedName.name}
+                              onChangeText={text => setUpdatedName({ ...updatedName,name:text })}
+              />
+              <Button
+                full
+                danger
+                style={{ width: 75 }}
+                onPress={() => updateInfo()}
+              >
+                <Text>OK</Text>
+              </Button>
+            </DialogContent>
+          </Dialog>
+        </View>
       </Content>
       {/* <Button
           title="Sign out"
@@ -136,5 +190,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff"
+  },
+  dialogContainer: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 1000,
+    elevation: 10
   }
 });
